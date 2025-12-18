@@ -13,100 +13,54 @@ class ListNode {
   }
 }
 
-const lt1: ListNode = {
-  val: 1,
-  next: {
-    val: 0,
-    next: {
-      val: 0,
-      next: {
-        val: 0,
-        next: {
-          val: 0,
-          next: {
-            val: 0,
-            next: {
-              val: 1,
-              next: null,
-            },
-          },
-        },
-      },
-    },
-  },
-};
-const lt2: ListNode = {
-  val: 5,
-  next: {
-    val: 6,
-    next: {
-      val: 4,
-      next: null,
-    },
-  },
-};
+// * TESTCASE
+const test1 = [9, 9, 9, 9, 9, 9, 9];
+const test2 = [9, 9, 9, 9];
+const lt1 = new ListNode();
+const lt2 = new ListNode();
+
+function numArrToList(from: number[], to: ListNode) {
+  to.val = from[from.length - 1];
+  from.pop();
+  if (from.length >= 1) {
+    to.next = new ListNode();
+    numArrToList(from, to.next);
+  }
+}
+
+numArrToList(test1.reverse(), lt1);
+numArrToList(test2.reverse(), lt2);
 
 // @lc code=start
 function addTwoNumbers(
   l1: ListNode | null,
   l2: ListNode | null
 ): ListNode | null | number[] {
-  const temp1: number[] = [];
-  const temp2: number[] = [];
-
-  function listToFlipNum(from: ListNode | null, to: number[]) {
-    if (from) {
-      listToFlipNum(from.next, to);
-      to.push(from.val);
+  const l3: ListNode = new ListNode();
+  let remainder = 0;
+  function fill(l1: ListNode | null, l2: ListNode | null, l3: ListNode) {
+    const n1 = l1?.val || 0;
+    const n2 = l2?.val || 0;
+    const res = n1 + n2 + remainder;
+    remainder = 0;
+    l3.val = res % 10;
+    if (res >= 10) remainder = 1;
+    if (l1?.next || l2?.next || remainder === 1) {
+      l3.next = new ListNode();
+      fill(l1?.next || null, l2?.next || null, l3.next);
     }
   }
-
-  listToFlipNum(l1, temp1);
-  listToFlipNum(l2, temp2);
-
-  let str1: string = "";
-  let str2: string = "";
-  temp1.forEach((v) => {
-    str1 += String(v);
-  });
-  temp2.forEach((v) => {
-    str2 += String(v);
-  });
-
-  const resStr = String(Number(str1) + Number(str2)).split(""); // OK
-  const resNum: number[] = []; // OK
-  const resList: ListNode = new ListNode();
-
-  resStr.forEach((v) => {
-    resNum.push(Number(v));
-  });
-
-  function numToFlipList(to: ListNode) {
-    to.val = resNum[resNum.length - 1];
-    console.log(resNum);
-    resNum.pop();
-    if (resNum.length >= 1) {
-      to.next = new ListNode();
-      numToFlipList(to.next);
-    }
-  }
-  numToFlipList(resList);
-
-  console.log(Object(resList));
-
-  return resList;
+  fill(l1, l2, l3);
+  console.log(l3);
+  return l3;
 }
 // @lc code=end
 
 addTwoNumbers(lt1, lt2);
 
 /*
-! Optimize
-Runtime error with this testcase:
-[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
-[5,6,4]
-
-Possible fix:
-handle only until (l2.length + 1 ) length
-
+Accepted
+1569/1569 cases passed (70 ms)
+Your runtime beats 5.48 % of typescript submissions
+Your memory usage beats 5.31 % of typescript submissions (65.7 MB)
 */
